@@ -25,7 +25,7 @@ def deserialize_weights(weights_json):
 def start_training():
     print("Begin...", file=sys.stderr)
     # List of client URLs
-    clients = ['http://fl-client-1:5000', 'http://fl-client-2:5000']  # Example clients
+    clients = ['http://fl-client-1:5000', 'http://fl-client-2:5000', 'http://fl-client-3:5000']  # Example clients
 
     # Set the number of rounds
     total_rounds = 10

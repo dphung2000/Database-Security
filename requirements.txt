@@ -1,0 +1,11 @@
+tensorflow-federated==0.87.0
+tensorflow
+flask==3.0.3
+numpy
+pandas
+sqlalchemy
+Flask-SQLAlchemy
+python-dotenv==1.0.1
+requests==2.32.3
+pysqlite3
+matplotlib

@@ -1,0 +1,104 @@
+services:
+  fl-server:
+    image: federated:latest
+    volumes:
+      - ./src/server:/app/server
+      - ./src/shared:/app/shared
+      - ./requirements.txt:/app/requirements.txt
+    ports:
+      - "5000:5000"
+    environment:
+      - ROLE=server
+      - SERVER_PORT=5000
+      - MODEL_PATH=/app/server/model
+      - PYTHONPATH=/app
+    networks:
+      - fl-network
+    command: sleep infinity
+
+  fl-client-1:
+    image: federated:latest
+    volumes:
+      - ./src/client:/app/client
+      - ./src/shared:/app/shared
+      - ./requirements.txt:/app/requirements.txt
+      - ./data/client1:/app/data
+    environment:
+      - ROLE=client
+      - CLIENT_ID=1
+      - SERVER_HOST=fl-server
+      - SERVER_PORT=5000
+      - DB_PATH=/app/data/client1.db
+      - PYTHONPATH=/app
+    networks:
+      - fl-network
+    depends_on:
+      - fl-server
+    command: sh -c "python shared/db_prep.py && python client/client.py 1"
+
+  fl-client-2:
+    image: federated:latest
+    volumes:
+      - ./src/client:/app/client
+      - ./src/shared:/app/shared
+      - ./requirements.txt:/app/requirements.txt
+      - ./data/client2:/app/data
+    environment:
+      - ROLE=client
+      - CLIENT_ID=2
+      - SERVER_HOST=fl-server
+      - SERVER_PORT=5000
+      - DB_PATH=/app/data/client2.db
+      - PYTHONPATH=/app
+    networks:
+      - fl-network
+    depends_on:
+      - fl-server
+    command: sh -c "python shared/db_prep.py && python client/client.py 2"
+
+  fl-client-3:
+    image: federated:latest
+    volumes:
+      - ./src/client:/app/client
+      - ./src/shared:/app/shared
+      - ./requirements.txt:/app/requirements.txt
+      - ./data/client3:/app/data
+    environment:
+      - ROLE=client
+      - CLIENT_ID=3
+      - SERVER_HOST=fl-server
+      - SERVER_PORT=5000
+      - DB_PATH=/app/data/client3.db
+      - PYTHONPATH=/app
+    networks:
+      - fl-network
+    depends_on:
+      - fl-server
+    command: sh -c "python shared/db_prep_flip.py && python client/client.py 3"
+
+  # fl-attacker:
+  #   image: federated:latest
+  #   volumes:
+  #     - ./src/attacker:/app/attacker
+  #     - ./src/shared:/app/shared
+  #     - ./requirements.txt:/app/requirements.txt
+  #     - ./data/attacker:/app/data
+  #   environment:
+  #     - ROLE=attacker
+  #     - ATTACKER_ID=1
+  #     - SERVER_HOST=fl-server
+  #     - SERVER_PORT=5000
+  #     - TARGET_CLIENTS=fl-client-1,fl-client-2,fl-client-3
+  #     - PYTHONPATH=/app
+  #   networks:
+  #     - fl-network
+  #   depends_on:
+  #     - fl-server
+  #     - fl-client-1
+  #     - fl-client-2
+  #     - fl-client-3
+  #   command: sleep infinity
+
+networks:
+  fl-network:
+    driver: bridge
